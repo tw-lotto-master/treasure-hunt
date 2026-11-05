@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Authentication Complete</title>
+</head>
+<body>
+    <script>
+        // 🚀 網頁版彈窗核銷防線：將 LINE/Google 回傳的 URL 參數隔空拋回給主網頁
+        if (window.opener) {
+            window.opener.postMessage(window.location.href, window.location.origin);
+            window.close(); // 拋完訊號後自動關閉彈窗
+        } else {
+            // 如果不是彈窗，嘗試直接本頁重定向
+            var urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('code')) {
+                window.location.href = window.location.origin + window.location.pathname.replace('auth.html', '') + window.location.search;
+            }
+        }
+    </script>
+</body>
+</html>

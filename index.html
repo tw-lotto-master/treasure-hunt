@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="/treasure-hunt/">
+
+  
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A new Flutter project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="flutter_application">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>flutter_application</title>
+  <link rel="manifest" href="manifest.json">
+  <!-- 👑 2026 網頁版 Google 憑證激活鎖：讓手機瀏覽器正式認得並開通一鍵登入權限 -->
+  <meta name="google-signin-client_id" content="63585055351-nc71hko4r3j04k02vlahbffm6ego9g2e.apps.googleusercontent.com">
+</head>
+<body>
+  <!--
+    You can customize the "flutter_bootstrap.js" script.
+    This is useful to provide a custom configuration to the Flutter loader
+    or to give the user feedback during the initialization process.
+
+    For more details:
+    * https://docs.flutter.dev/platform-integration/web/initialization
+  -->
+  <script src="flutter_bootstrap.js" async></script>
+  <script>
+    (function() {
+      // 1. 安全提取網址參數
+      var urlParams = new URLSearchParams(window.location.search);
+      
+      // 2. 攔截點：判定網址是否包含 LINE 回傳的有效 code
+       if (urlParams.has('code')) {
+   var urlCode = urlParams.get('code');
+   var urlState = urlParams.get('state') || '';
+   
+   if (urlCode && urlCode.trim() !== "") {
+     // 🚀【天網環境分流鎖】：嚴密防範網頁端直接開啟被誤殺驅逐！
+     if (window.opener) {
+       // A. 情況一：如果是網頁版自己開啟的第三方登入彈窗，精密走標準 postMessage 核銷閉環
+       console.log("[天網 Web 彈窗核銷] 偵測到網頁版彈窗流，拋回憑證訊號...");
+       window.opener.postMessage(window.location.href, window.location.origin);
+       window.close();
+     } else if (urlState === 'shoppy_login' && (navigator.userAgent.includes('Flutter') || !identical(0, 0.0))) {
+       // B. 情況二：唯有真正從手機原生 APP 內部喚醒的內嵌網頁，才放行發動 Deep Link 喚醒 APP
+       console.log("[天網 APP 導回] 偵測為手機實機 APP 內環境，執行自動導回閉環...");
+       window.location.href = "com.treasurehunt.localshop://?code=" + encodeURIComponent(urlCode);
+     } else {
+       // C. 情況三：手機 Chrome 瀏覽器直接打開的純網頁端，強制熔斷阻斷，絕對不允許開啟 APP！
+       console.log("[天網 Web 保留] 偵測為行動裝置純網頁環境，保留在本頁進行資料同步與 UI 刷新。");
+     }
+   }
+ }
+    })(); // 👈 對齊第 48 行的 function
+  </script>
+</body>
+</html>
